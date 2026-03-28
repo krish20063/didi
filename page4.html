@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memories So Far</title>
+    <style>
+        /* ==============================
+           CSS STYLES
+           ============================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0c0c0c;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .main-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .music-container {
+            flex: 1;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid #333;
+            padding: 20px;
+        }
+
+        .vinyl-section {
+            position: relative;
+            padding: 20px;
+        }
+
+        .vinyl-disc {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            /* Cover image name set to cover.jpg */
+            background: radial-gradient(circle, #000 20%, #111 25%, #000 30%, #111 35%, transparent 40%),
+                        url('cover.png');
+            background-size: cover;
+            background-position: center;
+            border: 10px solid #111;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            animation: rotateVinyl 6s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .vinyl-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background-color: #0c0c0c;
+            border-radius: 50%;
+            border: 4px solid #333;
+        }
+
+        .vinyl-disc.playing {
+            animation-play-state: running;
+        }
+
+        .music-controls {
+            text-align: center;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .music-controls h2 {
+            font-weight: 300;
+            margin-bottom: 20px;
+            color: #aaa;
+        }
+
+        audio {
+            width: 90%;
+            max-width: 350px;
+            outline: none;
+        }
+
+        .main-content {
+            flex: 2;
+            padding: 60px 40px;
+        }
+
+        .main-content h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .video-section {
+            max-width: 1100px; 
+            margin: 0 auto 50px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            background: black;
+        }
+
+        .video-section video {
+            width: 100%;
+            display: block;
+            outline: none;
+        }
+
+        .gallery-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .gallery-item {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            border-color: #444;
+        }
+
+        /* --- Next Page Button Styling --- */
+        .btn-container {
+            text-align: center;
+            width: 100%;
+            padding: 20px 0 60px 0;
+        }
+
+        .next-page-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: #f5f5f5;
+            color: #0c0c0c;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+        }
+
+        .next-page-btn:hover {
+            background-color: #ffffff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255,255,255,0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(255,255,255,0.1);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 50px;
+            font-weight: 200;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: #ff4444;
+        }
+
+        @media (max-width: 900px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+            .music-container {
+                position: relative;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #333;
+                padding: 40px 20px;
+            }
+            .vinyl-disc {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+        @keyframes rotateVinyl {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        
+        <div class="music-container">
+            <div class="vinyl-section">
+                <div class="vinyl-disc" id="vinylDisc">
+                    <div class="vinyl-center"></div>
+                </div>
+            </div>
+            
+            <div class="music-controls">
+                <h2>Didi's Fav Song</h2>
+                <audio id="mainAudio" controls autoplay>
+                    <source src="song.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <h1>Memories So Far 💖</h1>
+
+            <div class="video-section">
+                <video id="memoryVideo" controls>
+                    <source src="video.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="gallery-section">
+                <img src="pic1.jpg" alt="Memory 1" class="gallery-item">
+                <img src="pic2.jpg" alt="Memory 2" class="gallery-item">
+                <img src="pic3.jpg" alt="Memory 3" class="gallery-item">
+                <img src="pic4.jpg" alt="Memory 4" class="gallery-item">
+                <img src="pic5.jpg" alt="Memory 5" class="gallery-item">
+                <img src="pic6.jpg" alt="Memory 6" class="gallery-item">
+                <img src="pic7.jpg" alt="Memory 7" class="gallery-item">
+                <img src="pic8.jpg" alt="Memory 8" class="gallery-item">
+                <img src="pic9.jpg" alt="Memory 9" class="gallery-item">
+                <img src="pic10.jpg" alt="Memory 10" class="gallery-item">
+                <img src="pic11.jpg" alt="Memory 11" class="gallery-item">
+                <img src="pic12.jpg" alt="Memory 12" class="gallery-item">
+                <img src="pic13.jpg" alt="Memory 13" class="gallery-item">
+                <img src="pic14.jpg" alt="Memory 14" class="gallery-item">
+                <img src="pic18.jpg" alt="Memory 15" class="gallery-item">
+                <img src="pic16.jpg" alt="Memory 15" class="gallery-item">
+                <img src="pic17.jpg" alt="Memory 15" class="gallery-item">
+                <img src="pic15.jpg" alt="Memory 15" class="gallery-item">
+            </div>
+
+            <div class="btn-container">
+                <a href="page5.html" class="next-page-btn">Next Page ➔</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="photoModal" class="modal">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="fullImage">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const audio = document.getElementById('mainAudio');
+            const vinylDisc = document.getElementById('vinylDisc');
+            const video = document.getElementById('memoryVideo');
+            
+            const modal = document.getElementById('photoModal');
+            const modalImg = document.getElementById('fullImage');
+            const closeModal = document.querySelector('.close-modal');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+
+            // Spin vinyl when music plays
+            audio.addEventListener('play', () => {
+                vinylDisc.classList.add('playing');
+                if (!video.paused) video.pause();
+            });
+
+            // Stop vinyl when music pauses
+            audio.addEventListener('pause', () => {
+                vinylDisc.classList.remove('playing');
+            });
+
+            // Pause music if video starts playing
+            video.addEventListener('play', () => {
+                if (!audio.paused) audio.pause();
+            });
+
+            // Open image in full screen modal
+            galleryItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    modal.classList.add('show');
+                    modalImg.src = item.src;
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // Close modal functions
+            const closeTheModal = () => {
+                modal.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            };
+
+            closeModal.addEventListener('click', closeTheModal);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeTheModal();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('show')) {
+                    closeTheModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

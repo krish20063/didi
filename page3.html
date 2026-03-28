@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fun Quiz 💖</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+    }
+
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #ff4b7d;
+    }
+
+    .question {
+      margin: 15px 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .option {
+      background: #f3f3f3;
+      padding: 15px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 500;
+    }
+
+    .option:hover {
+      transform: scale(1.05);
+      background: #ffe3ec;
+    }
+
+    .selected {
+      border: 2px solid #ff4b7d;
+      background: #ffd6e0;
+    }
+
+    .correct {
+      background: #b9fbc0 !important;
+      color: #065f46;
+      font-weight: bold;
+    }
+
+    .wrong {
+      background: #ffadad !important;
+      color: #7f1d1d;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      background: #ff4b7d;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .result-box {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .result-correct {
+      background: #b9fbc0;
+      color: #065f46;
+    }
+
+    .result-wrong {
+      background: #ffadad;
+      color: #7f1d1d;
+    }
+
+    .extra-btns button {
+      margin: 10px 5px 0;
+      background: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Fun Quiz 😄</h1>
+
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+
+  <button onclick="submitAnswer()">Submit ✅</button>
+
+  <div id="resultBox" class="result-box"></div>
+  <div class="extra-btns" id="extra"></div>
+</div>
+
+<script>
+let current = 0;
+let selected = null;
+let score = 0;
+
+function loadQuestion() {
+  selected = null;
+  document.getElementById("resultBox").style.display = "none";
+  document.getElementById("extra").innerHTML = "";
+
+  let q = "";
+  let opts = [];
+
+  if (current === 0) {
+    q = "What is your favourite food? 🍕";
+    opts = ["Pizza", "Biryani", "Pasta", "Momos"];
+  }
+  else if (current === 1) {
+    q = "What is your best quality? 😏";
+    opts = ["Tera shakal", "Tera height", "Tera irritating nature", "Tera personality"];
+  }
+  else if (current === 2) {
+    q = "Who is the best sibling in the world? 😎";
+    opts = ["Me", "Also me", "Obviously me", "Your brother"];
+  }
+  else {
+    document.getElementById("question").innerText = "Quiz Completed 🎉";
+    document.getElementById("options").innerHTML = "";
+
+    let resultBox = document.getElementById("resultBox");
+    resultBox.style.display = "block";
+    resultBox.className = "result-box result-correct";
+
+    resultBox.innerHTML = `
+      Your Score: ${score}/3 🎯 <br><br>
+      No matter what... you are the best sister ever ❤️
+    `;
+
+    document.getElementById("extra").innerHTML = `
+      <button onclick="goNext()">Next Surprise ➡️</button>
+    `;
+    return;
+  }
+
+  document.getElementById("question").innerText = q;
+
+  let html = "";
+  opts.forEach((o, i) => {
+    html += `<div class="option" onclick="selectOption(this, ${i})">${o}</div>`;
+  });
+
+  document.getElementById("options").innerHTML = html;
+}
+
+function selectOption(el, index) {
+  document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
+  el.classList.add("selected");
+  selected = index;
+}
+
+function submitAnswer() {
+  if (selected === null) return alert("Select an option first 😄");
+
+  let options = document.querySelectorAll(".option");
+  let resultBox = document.getElementById("resultBox");
+  let extra = "";
+  let msg = "";
+  let isCorrect = false;
+
+  if (current === 0) {
+    msg = "Wrong 😜 Tumko kya khana hai woh decide nahi hota 😂";
+    options[selected].classList.add("wrong");
+  }
+
+  else if (current === 1) {
+    if (selected === 1) {
+      msg = "Correct 😎 Height hi best hai!";
+      options[selected].classList.add("correct");
+      isCorrect = true;
+      score++;
+    }
+    else if (selected === 2) {
+      msg = "Haa irritating nature bhi pasand hai 😂 but height best hai!";
+      options[selected].classList.add("wrong");
+    }
+    else {
+      msg = "Tum mereko itna accha samajhti ho kya 😏";
+      options[selected].classList.add("wrong");
+    }
+  }
+
+  else if (current === 2) {
+    msg = "Correct 😍 Obviously main hi best hoon!";
+    options[selected].classList.add("correct");
+    isCorrect = true;
+    score++;
+  }
+
+  resultBox.style.display = "block";
+  resultBox.innerText = msg;
+
+  if (isCorrect) {
+    resultBox.className = "result-box result-correct";
+    extra = `<button onclick="next()">Next ➡️</button>`;
+  } else {
+    resultBox.className = "result-box result-wrong";
+    extra = `
+      <button onclick="retry()">Retry 🔁</button>
+      <button onclick="next()">Next ➡️</button>
+    `;
+  }
+
+  document.getElementById("extra").innerHTML = extra;
+}
+
+function retry() {
+  loadQuestion();
+}
+
+function next() {
+  current++;
+  loadQuestion();
+}
+
+function goNext() {
+  window.location.href = "page4.html"; // next page
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
