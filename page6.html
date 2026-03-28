@@ -78,7 +78,7 @@
             font-style: italic;
             overflow-y: auto;
             padding-right: 15px;
-            text-align: left; /* Reading ke liye left alignment best hai */
+            text-align: left; 
         }
 
         .personalized-message-text::-webkit-scrollbar { width: 5px; }
@@ -89,11 +89,11 @@
             border-top: 1px solid rgba(246, 223, 133, 0.3);
             padding-top: 20px;
             font-weight: bold;
-            text-align: center; /* Poetry is center aligned */
+            text-align: center; 
             font-size: 1.2rem;
         }
 
-        /* --- SECTION 3: Final Page Fix --- */
+        /* --- SECTION 3: Final Page --- */
         #final-section {
             display: none;
             opacity: 0;
@@ -107,7 +107,7 @@
 
         .final-text-wrapper {
             width: 100%;
-            text-align: center; /* Container centering */
+            text-align: center; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -150,19 +150,6 @@
             box-shadow: 0 8px 25px rgba(214, 194, 101, 0.5);
         }
 
-        /* Revisit Button Style */
-        #revisit-btn {
-            background-color: transparent;
-            border: 2px solid #D6C265;
-            color: #D6C265;
-            margin-top: 45px;
-        }
-
-        #revisit-btn:hover {
-            background-color: #D6C265;
-            color: #121217;
-        }
-
     </style>
 </head>
 <body>
@@ -200,7 +187,6 @@
                 Happy birthday to you, just hoping that I made your special day extra special for you. <span class="final-blue-heart">💙</span><br>
                 and help you gift a memory you would admire.
             </h2>
-            <button id="revisit-btn" class="next-btn" onclick="window.location.href='index.html'">Revisit the Journey ↺</button>
         </div>
     </div>
 
